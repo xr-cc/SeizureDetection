@@ -5,7 +5,7 @@ function [labels,info] = process_patient(patient,processFlag)
 %           [labels,info] = process_patient(patient)
 % Inputs:   patient         -char array of patient ID
 %           processFlag(opt)-process files or not (default: false)
-% Outputs:  labelInOrder    -array of names of channels used in order
+% Outputs:  labels          -array of names of channels used in order
 %           info            -matrix of all infomation read for the patient 
 %                            of format:
 %                            [patientID,fileID,startTime,endTime,seizure,seizureInfo],
