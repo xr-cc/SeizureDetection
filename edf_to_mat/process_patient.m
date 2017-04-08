@@ -1,5 +1,25 @@
-function labelInOrder = process_patient(patient)
+function [labels,info] = process_patient(patient,processFlag)
+% PROCESS_PATIENT  Process edf files of a specified patient and save them properly.
+% Usage:    process_patient(patient)
+%           labels = process_patient(patient)
+%           [labels,info] = process_patient(patient)
+% Inputs:   patient         -char array of patient ID
+%           processFlag(opt)-process files or not (default: false)
+% Outputs:  labels          -array of names of channels used in order
+%           info            -matrix of all infomation read for the patient 
+%                            of format:
+%                            [patientID,fileID,startTime,endTime,seizure,seizureInfo],
+%                            where seizureInfo is [1x1 struct] with fields
+%                            Seizure1, Seizure2, etc. (if ever), which
+%                            contain 1x2 cell of seizure onset and end time.                            
+% Note:     used function: edf2mat()
+
 %num2str([0:20].','%02d')
+if nargin < 2
+  processFlag = false;
+end
+
+labels = '' % default value if not processing file
 
 path = ['../Data/chb',patient,'/'];
 addpath(path);
@@ -13,19 +33,22 @@ fid = fopen(summaryfile,'r');
 tline = fgets(fid);
 while ischar(tline)
     str = tline;
-    seg = [];
+    seg = []; % to store info of current segment of data (or, file)
+    % File Name
     namePattern = 'File Name';
     if (strfind(str,namePattern))
         elems = regexp(str, '(\d+)_(\d+)', 'tokens');        
         patientID = elems{1}(1);
         fileID = elems{1}(2);
-        
-        % process file
-%         labelInOrder = edf2mat(char(patientID),char(fileID));
-        
+        %% process file of each time segment if processFlag is on
+        if (processFlag)           
+            labels = edf2mat(char(patientID),char(fileID));
+        end        
+        %% move on 
         seg = [seg,[patientID,fileID]]; 
         tline = fgets(fid);
         str = tline;
+        % File Start Time
         startTimePattern = 'File Start Time';
         if (strfind(str,startTimePattern))
             elems = regexp(str, '(\d+\:\d+\:\d+)', 'tokens');
@@ -34,6 +57,7 @@ while ischar(tline)
         end
         tline = fgets(fid);
         str = tline;
+        % File End Time
         endTimePattern = 'File End Time';
         if (strfind(str,endTimePattern))
             elems = regexp(str, ': (\d+\:\d+\:\d+)', 'tokens');
@@ -42,7 +66,7 @@ while ischar(tline)
         end
         tline = fgets(fid);
         str = tline;
-        % number of seizures
+        % Number of Seizures in File
         numSeizureInd = 'Number';
         if (strfind(str,numSeizureInd))
             elems = regexp(str, ': (\d+)', 'tokens');
@@ -72,13 +96,12 @@ while ischar(tline)
         end
         
     end
-%     disp(seg)
     info = [info; seg];
     tline = fgets(fid);
 end
 fclose(fid);
 
-%% save info
+%% save info to file
 savePath = ['../Data/chb',patient,'mat'];
 if ~exist(savePath, 'dir')
   mkdir(savePath);

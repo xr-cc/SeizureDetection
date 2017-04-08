@@ -1,6 +1,7 @@
 function labelInOrder = edf2mat(patientID,fileID,channels)
 % EDF2MAT  Transform edf. file to mat. file and save it under ../Data/.
-% Usage:    labelInOrder = edf2mat(patientID,fileID)
+% Usage:    edf2mat(patientID,fileID,channels(opt))
+%           labelInOrder = edf2mat(patientID,fileID)
 %           labelInOrder = edf2mat(patientID,fileID,channels) 
 % Inputs:   patientID       -char array of patient ID
 %           fileID          -char array of file ID
@@ -27,18 +28,16 @@ D = rec;
 labels = hdr.label; % all channels provided by data
 channels_used = ismember(labels,channels); % indices of channels used
 used_channels = labels(channels_used); % channels used
-% used channels and their corresponding indices
-[A I] = unique(used_channels);
+[A I] = unique(used_channels); % used channels and corresponding indices
 % not_used_channels = labels(~channels_used);
 % not_used_idx = find(~channels_used);
 used_idx = I;
 % D(not_used_idx,:) = [];
-% D(5,:)=[];D(10-1,:)=[];D(13-2,:)=[];D(18-3,:)=[];D(23-4,:)=[];
-D = D(used_idx,:); %follow the order in A
-% SNchb01_01 = D-D(1,2);
+D = D(used_idx,:); % follow the order in A
 A = A';
 varname = matlab.lang.makeValidName(['SN',f]);
-eval([varname '= {A,D-D(1,2)};']);
+eval([varname '= {A,D-D(1,2)};']); %e.g. SNchb01_01 = D-D(1,2);
+%%
 fileName = ['SN',f,'.mat'];
 savePath = ['../Data/chb',patientID,'mat'];
 if ~exist(savePath, 'dir')

@@ -1,0 +1,125 @@
+1.edf2mat
+% EDF2MAT  Transform edf. file to mat. file and save it under ../Data/.
+% Usage:    edf2mat(patientID,fileID,channels(opt))
+%           labelInOrder = edf2mat(patientID,fileID)
+%           labelInOrder = edf2mat(patientID,fileID,channels) 
+% Inputs:   patientID       -char array of patient ID
+%           fileID          -char array of file ID
+%           channels(opt)   -cell array of user-specified channels to be used
+% Outputs:  labelInOrder    -array of names of channels used in order
+
+
+2.process_patient
+% PROCESS_PATIENT  Process edf files of a specified patient and save them properly.
+% Usage:    process_patient(patient)
+%           labels = process_patient(patient)
+%           [labels,info] = process_patient(patient)
+% Inputs:   patient         -char array of patient ID
+%           processFlag(opt)-process files or not (default: false)
+% Outputs:  labels          -array of names of channels used in order
+%           info            -matrix of all infomation read for the patient 
+%                            of format:
+%                            [patientID,fileID,startTime,endTime,seizure,seizureInfo],
+%                            where seizureInfo is [1x1 struct] with fields
+%                            Seizure1, Seizure2, etc. (if ever), which
+%                            contain 1x2 cell of seizure onset and end time.                            
+% Note:     used function: edf2mat()
+
+
+3.get_energy
+% GET_ENERGY  Compute bandwidth-energy of provided data.
+% Usage:    bandsEnergy = get_energy(data_seg)
+%           bandsEnergy = get_energy(data_seg,Fs,M,lf,uf)
+% Inputs:   data_seg    -segment of data (chN x (T*Fs)) 
+%           Fs(opt)     -sample rate (default:256)
+%           M(opt)      -number of bands (default:8)
+%           lf(opt)     -lower bound of frequency range (default:0)
+%           uf(opt)     -upper bound of frequency range (default:24)
+%           overlap(opt)-overlap (in Hz) of bands next ot each other
+% Outputs:  bands       -M x chN matrix (chN: number of channels)
+
+
+4.time2sec
+% TIME2SEC  Convert time to seconds.
+% Usage:    time = time2sec(time_string)
+% Inputs:   time_string     -time string in form of HH:MM:SS
+% Outputs:  time            -time in seconds
+
+
+5.plotEEG
+% PLOTEEG  Plot EEG data.
+% Usage:    plotEEG(plot_count,data,channels,startTime,Fs)
+%           plotEEG(plot_count,data,channels)
+% Inputs:   plot_count      -idx for plot
+%           data            -EEG data
+%           channels        -corresponding channel names
+%           startTime(opt)  -starting time of data (default:0)
+%           Fs(opt)         -sample rate (default:256)
+
+
+6.plotFFT
+% PLOTFFT  Plot FFT of data (single channel).
+% Usage:    plotFFT(plot_count,chData,fa,fb,Fs)
+%           plotFFT(plot_count,chData)
+% Inputs:   plot_count      -idx for plot
+%           chData          -single channel data
+%           lf(opt)         -lower bound of frequency range (default:0)
+%           uf(opt)         -upper bound of frequency range (default:256)
+%           Fs(opt)         -sample rate (default:256)
+
+
+7.get_seg_feature
+% GET_SEG_FEATURE  Generate features for single segment.
+% Usage:    [featureOutput,labelOutput]=get_seg_feature(eegData,T_tilt,timeMax,seizureFlag,L,W,Fs)
+%           [featureOutput,labelOutput]=get_seg_feature(eegData,T_tilt,timeMax,seizureFlag,L,W)
+% Inputs:   eegData         -EEG data of the segment
+%           T_tilt          -time idx for first X_T_tilt
+%           timeMax         -maximum time idx 
+%           seizureFlag     -1 for seizure and 0 for non-seizure
+%           L               -interval length
+%           W               -number of intervals
+%           Fs(opt)         -sample rate (default:256)
+% Outputs:  featureOutput   -M*chN*W*T feature matrix
+%           labelOutput     -1*T label vector
+% Note:     used function: get_energy()
+
+
+8.get_patient_feature
+% GET_PATIENT_FEATURE  Generate features from all files of a patient and save to file.
+% Usage:    [features,labels] = get_patient_feature(patientID,Fs,L,W,S,H,Hmulti)
+%           [features,labels] = get_patient_feature(patientID)
+%           plotEEG(plot_count,data,channels)
+% Inputs:   patientID       -char array of patient ID
+%           Fs(opt)         -sample rate (default:256)
+%           L(opt)          -interval length (default:2)
+%           W(opt)          -number of intervals (default:3)
+%           S(opt)          -seconds into seizure of data taken (default:20)
+%           H(opt)          -hours of non-seizure data needed (default:1)
+%           Hmulti(opt)     -multiples of non-seizure data taken with H equally 
+%                            spread to each file (default:10; 0 for taking all data)
+% Outputs:  features        -M*chN*W*T feature matrix
+%           labels          -1*T label vector
+% Note:     used function: get_seg_feature(), time2sec()
+
+
+*9.extract_single_file
+% EXTRACT_SINGLE_FILE  Plot EEG data of a single file and plot fft of specified channel.
+%                      (If seizure, plot EEG data around seizure onset and FFT for entire seizure time;
+%                      If non-seizure, plot EEG for speicified time range and FFT for entire data segment.)
+% Usage:    [eegData,W_epoch_energy,featureOutput,labelOutput]=extract_single_file(patientID,segID,Fs,L,W,S,H,lf,uf)
+%           [eegData,W_epoch_energy,featureOutput,labelOutput]=extract_single_file(patientID,segID)
+% Inputs:   patientID       -char array of patient ID
+%           segID           -char array of segment (file) ID
+%           targetCh        -channel picked in FFT plotting (default:FP2F4)
+%           Fs(opt)         -sample rate (default:256)
+%           L(opt)          -interval length (default:2)
+%           W(opt)          -number of intervals (default:3)
+%           S(opt)          -seconds into seizure of data taken (default:20)
+%           H(opt)          -hours of non-seizure data needed (default:1)
+%           lf(opt)         -lower bound of frequency range (default:0)
+%           uf(opt)         -upper bound of frequency range (default:24)
+% Outputs:  eegData         -EEG Data
+%           featureOutput   -features generated by selected data
+%           labelOutput     -labels corresponding to selected data
+% Note:     EEG plotting parameters need to be changed within function.
+%           used function: get_seg_feature(), time2sec()
