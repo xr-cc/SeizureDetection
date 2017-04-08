@@ -22,6 +22,6 @@ label0 = label(1:10000);
 normalized = feature0/max(abs(feature0(:)));
 
 %% permute and reshpae feature vector
-feature1 = permute(feature0,[3 1 2 4]); % W*M*chN*T
-feature2 = reshape(feature1,size(feature1,1)*size(feature1,2)*size(feature1,3),size(feature1,4));
+feature1 = permute(feature0,[3 1 2 4]); % W*M*chN
+feature2 = reshape(feature1,24,size(feature1,4))
 

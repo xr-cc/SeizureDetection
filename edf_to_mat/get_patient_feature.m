@@ -38,11 +38,10 @@ end
 %%
 features = [];
 labels = [];
-featureIdx = 1;
 
 %% load data
 filePath = ['../Data/chb',patientID,'mat'];
-labels = [];
+seizureFlags = [];
 segIDs = {};
 startTs = {};
 endTs = {};
@@ -56,7 +55,7 @@ for i = 1:nseg
     segIDs = [segIDs,summary.info{i,2}];
     startTs = [startTs,summary.info{i,3}];
     endTs = [endTs,summary.info{i,4}];
-    labels = [labels,summary.info{i,5}];
+    seizureFlags = [seizureFlags,summary.info{i,5}];
     seizureInfos = [seizureInfos,summary.info{i,6}];
 end
 % baseTime = time2sec(startTs{1}); % starting time
@@ -64,7 +63,7 @@ end
 % data = [];
 
 time_nonseizure = H*3600;
-num_nonseizure = nseg-sum(labels);
+num_nonseizure = nseg-sum(seizureFlags);
 time_per_nonseizure = int8(time_nonseizure/num_nonseizure)*Hmulti;
 
 for segID = segIDs
@@ -79,7 +78,7 @@ for segID = segIDs
     eegData = file.(fName{1}){2};
 
     %% seizure or non-seizure
-     if labels(idx)==0 % non-seizure    
+     if seizureFlags(idx)==0 % non-seizure    
         disp('Non-Seizure');
         baseT = time2sec(startTs{idx});
         startT = 0;
