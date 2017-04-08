@@ -60,33 +60,3 @@ for i = 1:num_isSeizure
 end
 acc = correct_seizure/num_isSeizure;
 
-
-% %% split data
-% train_test_split = 0.8;
-% T = length(labels_input);
-% rdm_indices = randperm(T);
-% % indices = 1:T;
-% idx_train = rdm_indices(1:train_test_split*T);
-% idx_test = rdm_indices((train_test_split*T+1):T);
-% features_train = features_input(idx_train,:);
-% labels_train = labels_input(idx_train);
-% features_test = features_input(idx_test,:);
-% labels_test = labels_input(idx_test);
-
-
-% %% train and test
-% model = svmtrain(labels_train, features_train,'-b 0 -t 2 -w1 1 -w0 0.03');
-% [labels_predicted, accuracy, decision_values] = svmpredict(labels_test, features_test, model);
-% 
-% %% performance measurements
-% confusion_matrix = confusionmat(labels_test,labels_predicted); % [TP,FN;FP,TN]
-% TP = confusion_matrix(1,1);
-% FN = confusion_matrix(1,2);
-% FP = confusion_matrix(2,1);
-% TN = confusion_matrix(2,2);
-% precision = TP/(TP+FP); % precision = TP/(TP+FP)
-% recall = TP/(TP+FN); % recall = TP/(TP+FN)
-% % F1score = 2*precision*recall/(precision+recall) = 2*TP/(2*TP+FP+FN)
-% F1_score =  2*precision*recall/(precision+recall);
-% %% LORO-CV
-% % to do 
