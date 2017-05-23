@@ -23,9 +23,12 @@ f = ['chb',N];
 filename = [f,'.edf'] % e.g. 'chb01_01.edf';
 [hdr,rec]= edfread(filename);
 D = rec;
+cut = ~any(isnan(D),2);
+D(find(cut==0),:)=[];
  
 %%
 labels = hdr.label; % all channels provided by data
+labels((find(cut==0)))=[];
 channels_used = ismember(labels,channels); % indices of channels used
 used_channels = labels(channels_used); % channels used
 [A I] = unique(used_channels); % used channels and corresponding indices

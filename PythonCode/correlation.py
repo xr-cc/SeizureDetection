@@ -7,7 +7,7 @@ import math
 from sklearn import feature_selection
 import os
 
-case = '09' # 1,3,5:good; 6:bad; 2,4:terrible
+case = '01' # 1,3,5:good; 6:bad; 2,4:terrible
 
 features_mat = scipy.io.loadmat('../Feature/chb'+case+'feature/SNchb'+case+'features.mat')
 labels_mat = scipy.io.loadmat('../Feature/chb'+case+'feature/SNchb'+case+'labels.mat')
@@ -28,7 +28,7 @@ for i in N:
     feature_inputs.append(feature)
     label_inputs.append(labels[0][i])
 
-print 'number of data: ', len(label_inputs)
+# print "number of data: ", len(label_inputs)
 
 label_inputs = np.array(label_inputs)
 feature_inputs = np.array(feature_inputs)

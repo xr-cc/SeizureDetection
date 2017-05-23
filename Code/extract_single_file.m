@@ -80,25 +80,25 @@ eegData = file.(fName{1}){2};
 %% PARAMETERS
 % EEG
 % relative starting and ending time
-% ta = 1/Fs;
-% tb = size(eegData,2)/Fs-1;
-ta = 80;
-tb = 100;
+ta = 1/Fs;
+tb = size(eegData,2)/Fs-1;
+% ta = 80;
+% tb = 100;
 plot_count = 0;
 
 %% plot EEG data (of specified time range)
 data = eegData(:,ta*Fs:tb*Fs);
 plot_count = plot_count+1;
-plotEEG(plot_count,data,channels,ta);
+plotEEG(plot_count,data,channels);
 title(['EEG Data of ',patientID,'\_',segID]);
 
-%% plot FFT of EEG of target channel
-chIdx = find(strcmp(channels,targetCh));
-chData = data(chIdx,:);
-plot_count = plot_count+1;
-% plotFFT(plot_count,chData,lf,uf,Fs);
-plotFFT(plot_count,chData);
-title(['FFT of EEG of channel ',targetCh,' (from time ',num2str(ta),' to ',num2str(tb),')']);
+% %% plot FFT of EEG of target channel
+% chIdx = find(strcmp(channels,targetCh));
+% chData = data(chIdx,:);
+% plot_count = plot_count+1;
+% % plotFFT(plot_count,chData,lf,uf,Fs);
+% plotFFT(plot_count,chData);
+% title(['FFT of EEG of channel ',targetCh,' (from time ',num2str(ta),' to ',num2str(tb),')']);
 
 %% seizure or non-seizure
  if labels(idx)==0 % non-seizure    
@@ -134,25 +134,25 @@ title(['FFT of EEG of channel ',targetCh,' (from time ',num2str(ta),' to ',num2s
         line([seizureEnd seizureEnd],get(gca,'YLim'),'Color','r');
         title(['EEG Data of ',patientID,'\_',segID,' (Seizure Onset: ',num2str(seizureStart),', Offset: ',num2str(seizureEnd),')']);
         
-        % plot FFT of target channel EEG data
-        baseT = seizureStart-(W-1)*L;
-        timeMin = baseT;
-        timeMax = min(seizureEnd,seizureStart+S);
-%         seizure_data = eegData(:,timeMin*Fs:timeMax*Fs);     
-        seizure_data = eegData(:,seizureStart*Fs:(seizureStart+2)*Fs);  
-        chSeizure_data = seizure_data(chIdx,:);       
-        plot_count = plot_count+1;
-        plotFFT(plot_count,chSeizure_data,lf,uf,Fs);
-%         title(['Seizure Onset Data FFT: ',num2str(timeMin),'-',num2str(timeMax),'s (into record)']);
-        title(['Seizure Onset Data FFT: 2s into seizure onset at',num2str(seizureStart),'s']);
-       
-        % energy band
-        T_tilt = seizureStart+L; % time idx for first X_T_tilt
-        [segFeatureOutput,segLabelOutput]=get_seg_feature(eegData,T_tilt,timeMax,1,L,W,Fs);      
+%         % plot FFT of target channel EEG data
+%         baseT = seizureStart-(W-1)*L;
+%         timeMin = baseT;
+%         timeMax = min(seizureEnd,seizureStart+S);
+% %         seizure_data = eegData(:,timeMin*Fs:timeMax*Fs);     
+%         seizure_data = eegData(:,seizureStart*Fs:(seizureStart+2)*Fs);  
+%         chSeizure_data = seizure_data(chIdx,:);       
+%         plot_count = plot_count+1;
+%         plotFFT(plot_count,chSeizure_data,lf,uf,Fs);
+% %         title(['Seizure Onset Data FFT: ',num2str(timeMin),'-',num2str(timeMax),'s (into record)']);
+%         title(['Seizure Onset Data FFT: 2s into seizure onset at',num2str(seizureStart),'s']);
+%        
+%         % energy band
+%         T_tilt = seizureStart+L; % time idx for first X_T_tilt
+%         [segFeatureOutput,segLabelOutput]=get_seg_feature(eegData,T_tilt,timeMax,1,L,W,Fs);      
      end    
  end
  
-featureOutput = [segFeatureOutput];
-labelOutput = [segLabelOutput];
+% featureOutput = [segFeatureOutput];
+% labelOutput = [segLabelOutput];
 
 end

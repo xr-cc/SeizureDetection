@@ -46,12 +46,13 @@ with open(meas_note_path+"note"+case+".txt", "a") as myfile:
     myfile.write('svm_loo\n')
     myfile.write("iteration: "+str(iter)+"\n")
 
+# balancing data
+seizures_idx = np.where(label_inputs == 1)[0]
+num_seizures = len(seizures_idx)
+used_seizure_num = num_seizures
+nonseizures_idx = [idx for idx in N if (idx not in seizures_idx)]
+print "number of seizure data: ", num_seizures
 for j in range(iter):
-    # balancing data
-    seizures_idx = np.where(label_inputs == 1)[0]
-    num_seizures = len(seizures_idx)
-    used_seizure_num = num_seizures
-    nonseizures_idx = [idx for idx in N if (idx not in seizures_idx)]
     # random pick some non-seizure data
     nonseizure_idx_picked = np.random.choice(nonseizures_idx, int(num_seizures*1
                                                                   ),replace=False)
@@ -86,7 +87,7 @@ for j in range(iter):
         X_train, X_test = feature_inputs_picked[train_index], feature_inputs_picked[test_index]
         y_train, y_test = label_inputs_picked[train_index], label_inputs_picked[test_index]
         # training
-        clf = svm.SVC(kernel='rbf', C=1.0, gamma=0.1, class_weight={0: 1, 1: 1}) #gamma=0.1,
+        clf = svm.SVC(kernel='rbf',gamma=0.1, C=1.0, class_weight={0: 1, 1: 1}) #
         clf.fit(X_train, y_train)
         # testing'
         y_pred = clf.predict(X_test)
