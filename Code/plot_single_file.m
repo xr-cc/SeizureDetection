@@ -1,7 +1,6 @@
-function [eegData,featureOutput,labelOutput]=extract_single_file(patientID,segID,targetCh,Fs,L,W,S,H,lf,uf)
-% EXTRACT_SINGLE_FILE  Plot EEG data of a single file and plot fft of specified channel.
-%                      (If seizure, plot EEG data around seizure onset and FFT for entire seizure time;
-%                      If non-seizure, plot EEG for speicified time range and FFT for entire data segment.)
+function [eegData]=plot_single_file(patientID,segID,targetCh,Fs,L,W,S,H,lf,uf)
+% EXTRACT_SINGLE_FILE  Plot and save EEG data of a single file.
+%                      (If seizure, also plot EEG data around seizure onset;
 % Usage:    [eegData,featureOutput,labelOutput]=extract_single_file(patientID,segID,Fs,L,W,S,H,lf,uf)
 %           [eegData,featureOutput,labelOutput]=extract_single_file(patientID,segID)
 % Inputs:   patientID       -char array of patient ID
@@ -82,37 +81,22 @@ eegData = file.(fName{1}){2};
 % relative starting and ending time
 ta = 1/Fs;
 tb = size(eegData,2)/Fs-1;
-% ta = 80;
-% tb = 100;
 plot_count = 0;
 
 %% plot EEG data (of specified time range)
 data = eegData(:,ta*Fs:tb*Fs);
 plot_count = plot_count+1;
-plotEEG(plot_count,data,channels);
+fig = plotEEG(plot_count,data,channels);
+hold on
 title(['EEG Data of ',patientID,'\_',segID]);
-
-%% plot FFT of EEG of target channel
-chIdx = find(strcmp(channels,targetCh));
-chData = data(chIdx,:);
-plot_count = plot_count+1;
-% plotFFT(plot_count,chData,lf,uf,Fs);
-plotFFT(plot_count,chData);
-title(['FFT of EEG of channel ',targetCh,' (from time ',num2str(ta),' to ',num2str(tb),')']);
+fig_save_path = ['..\Measurements\plots\',patientID];
+if ~exist(fig_save_path, 'dir')
+  mkdir(fig_save_path);
+end
 
 %% seizure or non-seizure
  if labels(idx)==0 % non-seizure    
     disp('Non-Seizure');
-    baseT = time2sec(startTs{idx});
-    startT = 0;
-    endT = time2sec(endTs{idx})-baseT;
-    if endT<startT % one day more
-        endT = endT+time2sec('24:00:00');
-    end
-%     timeMin = startT;
-    timeMax = endT; 
-    T_tilt = W*L; % time idx for first X_T_tilt
-    [segFeatureOutput,segLabelOutput]=get_seg_feature(eegData,T_tilt,timeMax,0,L,W,Fs);
     
  else % seizure   
      disp('Seizure')
@@ -120,39 +104,34 @@ title(['FFT of EEG of channel ',targetCh,' (from time ',num2str(ta),' to ',num2s
      seizureI = fieldnames(sInfo);
      for j = 1:length(seizureI)
         seizurePeriod = sInfo.(seizureI{j});
-        seizureStart = seizurePeriod{1}
-        seizureEnd = seizurePeriod{2}
+        seizureStart = seizurePeriod{1};
+        seizureEnd = seizurePeriod{2};
+        line([seizureStart seizureStart],get(gca,'YLim'),'Color','r');
+        line([seizureEnd seizureEnd],get(gca,'YLim'),'Color','r');
+        hold off
+     end
+     for j = 1:length(seizureI)
+        seizurePeriod = sInfo.(seizureI{j});
+        seizureStart = seizurePeriod{1};
+        seizureEnd = seizurePeriod{2};
         
         % plot EEG data around seizure onset
-        ta = seizureStart-10;
-        tb = seizureEnd+10;
+        ta = seizureStart-20;
+        tb = seizureEnd+20;
         data = eegData(:,ta*Fs:tb*Fs);       
         plot_count = plot_count+1;
-        plotEEG(plot_count,data,channels,ta);
+        s = plotEEG(plot_count,data,channels,ta);
         hold on 
         line([seizureStart seizureStart],get(gca,'YLim'),'Color','r');
         line([seizureEnd seizureEnd],get(gca,'YLim'),'Color','r');
         title(['EEG Data of ',patientID,'\_',segID,' (Seizure Onset: ',num2str(seizureStart),', Offset: ',num2str(seizureEnd),')']);
-        
-        % plot FFT of target channel EEG data
-        baseT = seizureStart-(W-1)*L;
-        timeMin = baseT;
-        timeMax = min(seizureEnd,seizureStart+S);
-%         seizure_data = eegData(:,timeMin*Fs:timeMax*Fs);     
-        seizure_data = eegData(:,seizureStart*Fs:(seizureStart+2)*Fs);  
-        chSeizure_data = seizure_data(chIdx,:);       
-        plot_count = plot_count+1;
-        plotFFT(plot_count,chSeizure_data,lf,uf,Fs);
-%         title(['Seizure Onset Data FFT: ',num2str(timeMin),'-',num2str(timeMax),'s (into record)']);
-        title(['Seizure Onset Data FFT: 2s into seizure onset at',num2str(seizureStart),'s']);
-       
-        % energy band
-        T_tilt = seizureStart+L; % time idx for first X_T_tilt
-        [segFeatureOutput,segLabelOutput]=get_seg_feature(eegData,T_tilt,timeMax,1,L,W,Fs);      
+        print(s,[fig_save_path,'\',patientID,segID,'s',num2str(j)],'-dpng');       
+        hold off          
+        close(s);
      end    
  end
- 
-featureOutput = [segFeatureOutput];
-labelOutput = [segLabelOutput];
+
+print(fig,[fig_save_path,'\',patientID,segID],'-dpng')
+close(fig)
 
 end

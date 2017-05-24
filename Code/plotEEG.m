@@ -1,4 +1,4 @@
-function plotEEG(plot_count,data,channels,startTime,Fs)
+function fig = plotEEG(plot_count,data,channels,startTime,Fs)
 % PLOTEEG  Plot EEG data.
 % Usage:    plotEEG(plot_count,data,channels,startTime,Fs)
 %           plotEEG(plot_count,data,channels)
@@ -24,8 +24,8 @@ shift = repmat(shift,1,num_point);
 % t = (1:num_point)/Fs+baseTime+ta;
 t = (1:num_point)/Fs+startTime;
 
-figure(plot_count)
-plot(t,data+shift)
+fig = figure(plot_count);
+plot(t,data+shift);
 % edit axes
 set(gca,'ytick',mean(data+shift,2),'yticklabel',channels)
 grid on
