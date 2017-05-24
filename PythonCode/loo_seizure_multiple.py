@@ -5,7 +5,7 @@ from sklearn.metrics import accuracy_score
 import random
 import os
 
-case = '13'
+case = '03'
 note = "seizure taken from data"
 pre_seizure = 10
 iter = 100

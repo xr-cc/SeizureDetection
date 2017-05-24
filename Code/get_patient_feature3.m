@@ -38,7 +38,7 @@ time_nonseizure = H*3600;
 num_nonseizure = nseg-sum(seizureFlags);
 time_per_nonseizure = int8(time_nonseizure/num_nonseizure);
 
-cut = [];
+ns_seg_indices = [];
 
 for segID = segIDs
 try
@@ -63,7 +63,7 @@ try
             endT = endT+time2sec('24:00:00');
         end   
         % random
-        range = endT-startT-double(time_per_nonseizure)-W*L;
+        range = endT-startT-time_per_nonseizure-W*L;
         if range<0
             range = 1;
         end
@@ -73,10 +73,24 @@ try
         timeMax = min(firstT+double(time_per_nonseizure),endT);
         if timeMax<0
             timeMax = firstT+double(time_per_nonseizure);
-        end
+        end        
         [segFeatureOutput,segLabelOutput]=get_seg_feature(eegData,firstT,timeMax,0,L,W,Fs);
         features = cat(4, features, segFeatureOutput);
+        if length(segLabelOutput)~= 0
+            seg_idx = length(labels)+1;
+        seg_end_idx = seg_idx+length(segLabelOutput)-1;
+%         new_seg_idx = [seg_idx;seg_end_idx];
+%         find(ns_seg_indices(0)==seg_end_idx)
+%         if find(ns_seg_indices(0)==seg_end_idx)~=0
+%             % already in
+%         else
+            ns_seg_indices = [ns_seg_indices,[seg_idx;seg_end_idx]];
+%         end
+        end
+        
+        
         labels = [labels,segLabelOutput];
+        
 
      else % seizure   
          
@@ -133,3 +147,5 @@ featureFileName = ['SNchb',char(patientID),'features2.mat'];
 save([savePath,'/',featureFileName],'features');
 labelFileName = ['SNchb',char(patientID),'labels2.mat'];
 save([savePath,'/',labelFileName],'labels');
+nsidxFileName = ['SNchb',char(patientID),'nsidx.mat'];
+save([savePath,'/',nsidxFileName],'ns_seg_indices');
