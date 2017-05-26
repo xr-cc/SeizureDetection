@@ -4,7 +4,7 @@ from sklearn import svm
 from sklearn.metrics import accuracy_score
 import random
 
-case = '01'
+case = '10'
 note = "seizure taken from data"
 pre_seizure = 10
 

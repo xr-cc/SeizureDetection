@@ -27,7 +27,7 @@ while (T_tilt<=timeMax-L)
     for k = 1:W % loop through each of W epochs (L-second long)
         epoch_startT = T_tilt-(W-k+1)*L;
         epoch_endT = epoch_startT+L;
-        % porcess data
+        % process data
         epoch_energy = get_energy(eegData(:,(epoch_startT*Fs+1):epoch_endT*Fs));
         % concatenate W_epoch_energy: M*N*W
         W_epoch_energy(:,:,epoch_count) = epoch_energy;

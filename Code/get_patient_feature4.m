@@ -1,4 +1,4 @@
-patientID = '10'
+patientID = '01'
 %   Hmulti = 2;    
 H = 1;    % default hours of non-seizure data % currently not used
 S = 20;   % default seconds into seizure
@@ -36,10 +36,9 @@ end
 
 time_nonseizure = H*3600;
 num_nonseizure = nseg-sum(seizureFlags);
-time_per_nonseizure = ceil(time_nonseizure/num_nonseizure);
+time_per_nonseizure = int8(time_nonseizure/num_nonseizure);
 
 ns_seg_indices = [];
-ns_count = 0;
 
 for segID = segIDs
 try
@@ -63,38 +62,26 @@ try
         if endT<startT % one day more
             endT = endT+time2sec('24:00:00');
         end   
-        % random
-        range = endT-startT-time_per_nonseizure-W*L;
-        if range<0
-            range = 1;
-        end
-        T_rand = double(randi(range));
-        firstT = W*L+T_rand;
-%         firstT = W*L;
-        timeMax = min(firstT+double(time_per_nonseizure),endT)+1;
-        if timeMax<0
-            timeMax = firstT+double(time_per_nonseizure);
-        end
-        [segFeatureOutput,segLabelOutput]=get_seg_feature(eegData,firstT,timeMax,0,L,W,Fs);
+%         % random
+%         range = endT-startT-time_per_nonseizure-W*L;
+%         if range<0
+%             range = 1;
+%         end
+%         T_rand = randi(range);        
+%         firstT = W*L+T_rand;
+% %         firstT = W*L;
+%         timeMax = min(firstT+time_per_nonseizure,endT);
+%                 
+        [segFeatureOutput,segLabelOutput]=get_seg_feature(eegData,startT,endT,0,L,W,Fs);
         features = cat(4, features, segFeatureOutput);
-        if length(segLabelOutput)~= 0
+        if ~isempty(segLabelOutput)
             seg_idx = length(labels)+1;
             seg_end_idx = seg_idx+length(segLabelOutput)-1;
-%         new_seg_idx = [seg_idx;seg_end_idx];
-%         find(ns_seg_indices(0)==seg_end_idx)
-%         if find(ns_seg_indices(0)==seg_end_idx)~=0
-%             % already in
-%         else
             ns_seg_indices = [ns_seg_indices,[seg_idx;seg_end_idx]];
-%         end
-        end
-        
-        ns_count = ns_count + length(segLabelOutput);
+        end      
         labels = [labels,segLabelOutput];
         
-
-     else % seizure   
-         
+     else % seizure            
          disp('Seizure');
          sInfo = seizureInfos{idx};
          seizureI = fieldnames(sInfo);
@@ -112,26 +99,21 @@ try
             labels = [labels,segLabelOutput];
             % energy band
             timeMax = min(seizureEnd,seizureStart+S+L+1);
-%             timeMax
             firstT = seizureStart+L; % time idx for first X_T_tilt
-%             firstT
             [segFeatureOutput,segLabelOutput]=get_seg_feature(eegData,firstT,timeMax,1,L,W,Fs);
-%             len(segLabelOutput)
-%             size(segFeatureOutput)
             features = cat(4, features, segFeatureOutput);
             labels = [labels,segLabelOutput];
-%             len(segLabelOutput)
             
-%             % after seizure end
-%             after = seizureEnd+1;
-%             if Hmulti==0
-%                 timeMax = endT;
-%             else
-%                 timeMax = min(after+time_per_nonseizure,endT);
-%             end            
-%             [segFeatureOutput,segLabelOutput]=get_seg_feature(eegData,after,timeMax,0,L,W,Fs);
-%             features = cat(4, features, segFeatureOutput);
-%             labels = [labels,segLabelOutput];            
+            % after seizure end
+            after = seizureEnd+1;
+            if Hmulti==0
+                timeMax = endT;
+            else
+                timeMax = min(after+time_per_nonseizure,endT);
+            end            
+            [segFeatureOutput,segLabelOutput]=get_seg_feature(eegData,after,timeMax,0,L,W,Fs);
+            features = cat(4, features, segFeatureOutput);
+            labels = [labels,segLabelOutput];            
          end
          
      end
@@ -155,6 +137,3 @@ labelFileName = ['SNchb',char(patientID),'labels2.mat'];
 save([savePath,'/',labelFileName],'labels');
 nsidxFileName = ['SNchb',char(patientID),'nsidx.mat'];
 save([savePath,'/',nsidxFileName],'ns_seg_indices');
-
-disp('total number of non-seizure data(s)')
-disp(ns_count)

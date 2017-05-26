@@ -9,7 +9,7 @@ import os
 
 case = '09'
 ratio = 0.8
-note = ''
+note = 'train-test split'
 
 features_mat = scipy.io.loadmat('../Feature/chb'+case+'feature/SNchb'+case+'features.mat')
 labels_mat = scipy.io.loadmat('../Feature/chb'+case+'feature/SNchb'+case+'labels.mat')
@@ -34,6 +34,10 @@ print 'number of data: ', len(label_inputs)
 
 label_inputs = np.array(label_inputs)
 feature_inputs = np.array(feature_inputs)
+
+# normalize
+feature_inputs = feature_inputs / feature_inputs.max(axis=0)
+print feature_inputs.shape
 
 iter = 1000
 accrs = []
