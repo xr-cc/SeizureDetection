@@ -1,40 +1,39 @@
+'''
+Leave one non-seizure data point out.
+Measure accuracy and data point false positive rate.
+Parameters to set: case, pre_seizure, multi
+'''
 import scipy.io
 import numpy as np
 from sklearn import svm
 from sklearn.metrics import accuracy_score
-from sklearn.metrics import confusion_matrix
 import random
 
-case = '09'
-note = "seizure taken from data"
-pre_seizure = 10
+case = '01'
+pre_seizure = 10  # number of data points taken before seizure onset
+multi = 1  # times of non-seizure data comparing to seizure data
 
 # load files
 features_mat = scipy.io.loadmat('../Feature/chb'+case+'feature/SNchb'+case+'features2.mat')
 labels_mat = scipy.io.loadmat('../Feature/chb'+case+'feature/SNchb'+case+'labels2.mat')
 nsidx_mat = scipy.io.loadmat('../Feature/chb'+case+'feature/SNchb'+case+'nsidx.mat')
-
 labels = labels_mat['labels']
 features = features_mat['features']
 nsidx = nsidx_mat['ns_seg_indices']
 
-# seizure onset indices
+# seizure onset and end indices
 diffs = np.diff(labels[0])
 onset_indices = [i+1 for i, dif in enumerate(diffs) if dif == 1]
 end_indices = [i for i, dif in enumerate(diffs) if dif == 255]
 if len(end_indices)<len(onset_indices):
     end_indices.append(len(diffs)-1)
-# print onset_indices
-# print end_indices
+# non-seizure record starting and ending indices
 ns_start = [i-1 for i in nsidx[0]]
 ns_end = [i-1 for i in nsidx[1]]
-# print ns_start
-# print ns_end
-# print len(labels)
 
+# flatten data features
 feature_length = len(features)*len(features[0])*len(features[0][0])
 T = len(labels[0]) # 8*18*3*T
-
 feature_inputs = []
 label_inputs = labels[0]
 N = range(T)
@@ -47,18 +46,12 @@ print 'number of data: ', len(label_inputs)
 
 label_inputs = np.array(label_inputs)
 feature_inputs = np.array(feature_inputs)
-# normalize
+# normalization
 feature_inputs = feature_inputs / feature_inputs.max(axis=0)
 print feature_inputs.shape
 
-meas_note_path = '../Measurements/'
-with open(meas_note_path+"note"+case+".txt", "a") as myfile:
-    myfile.write("["+case+"] leave one non-seizure out: false alarm\n")
-
 avg_accr = 0
-# avg_la = 0
 fa_rate = 0
-# leave one out
 for i, start_idx in enumerate(ns_start):
     end_idx = ns_end[i]
     split_labels = np.split(label_inputs, [start_idx, end_idx + 1])
@@ -75,7 +68,7 @@ for i, start_idx in enumerate(ns_start):
     used_seizure_num = num_seizures
     nonseizures_idx = [idx for idx in N if (idx not in seizures_idx)]
     # random pick some non-seizure data
-    nonseizure_idx_picked = np.random.choice(nonseizures_idx, int(num_seizures * 1
+    nonseizure_idx_picked = np.random.choice(nonseizures_idx, int(num_seizures * multi
                                                                   ), replace=False)
     idx_picked = list(seizures_idx) + list(nonseizure_idx_picked)
     training_labels_picked = training_labels[idx_picked]
@@ -94,44 +87,18 @@ for i, start_idx in enumerate(ns_start):
     # testing'
     y_pred = clf.predict(X_test)
     accr = accuracy_score(y_test, y_pred)
-    # false positive
     fp = sum(y_pred)-sum(y_test)
-    # cm = confusion_matrix(y_test, y_pred)
-    # fp = cm[0][1]
     fa_rate += fp
-    # true_onset = np.where(y_test==1)[0][0]
-    # first_detect = np.where((y_test - 2. * y_pred) == -1)
-    # if len(first_detect[0]) == 0:
-    #     pred_onset = len(y_pred)
-    # else:
-    #     pred_onset = first_detect[0][0]
-    # latency = pred_onset-true_onset
     avg_accr += accr
-    # avg_la += latency
+
     print start_idx, "-", end_idx
     print "test:       ", y_test
     print "prediction: ", y_pred
     print "false alarm: ",fp
-    # print "Latency: ", latency
-    with open(meas_note_path + "note" + case + ".txt", "a") as myfile:
-        myfile.write("Non-Seizure No."+str(i) + " ("+str(start_idx)+"-"+str(end_idx)+")\n")
-        myfile.write("  true labels: " + str(y_test) + "\n")
-        myfile.write("  pred labels: " + str(y_pred) + "\n")
-        # myfile.write("  latency: " + str(latency) + "\n")
+
 
 
 avg_accr = avg_accr /len(ns_start)
 print "Accuracy: " ,avg_accr
 fa_rate = fa_rate/len(ns_start)
 print "False Alarm Rate: ", fa_rate
-# avg_la = avg_la/len(onset_indices)
-# print "Average Latency: ",avg_la
-
-
-meas_note_path = '../Measurements/'
-with open(meas_note_path+"note"+case+".txt", "a") as myfile:
-    myfile.write("number of data used: "+str(num_picked)+"\n")
-    myfile.write("number of seizures: "+str(len(onset_indices))+"\n")
-    myfile.write('average accuracy: '+ str(avg_accr)+"\n")
-    myfile.write('false alarm rate: '+str(fa_rate)+"\n\n")
-    # myfile.write('average latency: ' + str(avg_la)+"\n\n")
