@@ -47,3 +47,8 @@ Temporary Items
 .apdisk
 Data/chb06/MD5SUMS
 Data/chb06/SHA1SUMS
+
+# Files in data, feature and measurements
+/Data/*
+/Feature/*
+/Measurements/*
