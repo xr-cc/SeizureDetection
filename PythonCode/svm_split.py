@@ -1,5 +1,7 @@
 """
-Split data into training and testing set and measure basic performances.
+Split data into training and testing set.
+Use SVM model.
+Measure basic performances.
 Iterate for (iter) times and average the results.
 Parameters to set: case, ratio, iter, multi
 """
@@ -77,7 +79,7 @@ for j in range(iter):
 
     # testing'
     predicted_labels = clf.predict(test_features)
-    accr = accuracy_score(test_labels,predicted_labels)
+    accr = accuracy_score(test_labels,predicted_labels)  # accuracy score
     conf = confusion_matrix(test_labels, predicted_labels)  # confusion matrix
     fscore = f1_score(test_labels, predicted_labels)  # f-score
     # print "Accuracy: ", accr

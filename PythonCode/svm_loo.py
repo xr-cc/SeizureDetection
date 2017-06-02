@@ -1,5 +1,7 @@
 """
-Leave one data point out and measure basic performances.
+Leave one data point out.
+Use SVM model.
+Measure basic performances.
 Iterate for (iter) times and average the results.
 Parameters to set: case, iter, multi
 """
