@@ -7,7 +7,7 @@ Goldberger AL, Amaral LAN, Glass L, Hausdorff JM, Ivanov PCh, Mark RG, Mietus JE
 
 
 ## MATLAB CODE
-
+Data Processing and Feauture Generation
 ####Location: /Code
 
 edf2mat()
@@ -90,7 +90,7 @@ generate_feature_by_record()
 
 
 ## PYTHON CODE
-
+Classification and Performance Measurement
 ####Location: /PythonCode
 
 correlation
