@@ -70,7 +70,7 @@ baseTime = time2sec(startTs{1}); % starting time
 
 % index of specified segment
 idx = find(strcmp(segIDs,segID));
-% load data from file
+%% load data from file
 fileName = ['SNchb',patientID,'_',segID,'.mat'];
 file = load([filePath,'/',fileName]);
 fName = fieldnames(file);
@@ -137,13 +137,11 @@ title(['FFT of EEG of channel ',targetCh,' (from time ',num2str(ta),' to ',num2s
         % plot FFT of target channel EEG data
         baseT = seizureStart-(W-1)*L;
         timeMin = baseT;
-        timeMax = min(seizureEnd,seizureStart+S);
-%         seizure_data = eegData(:,timeMin*Fs:timeMax*Fs);     
+        timeMax = min(seizureEnd,seizureStart+S);   
         seizure_data = eegData(:,seizureStart*Fs:(seizureStart+2)*Fs);  
         chSeizure_data = seizure_data(chIdx,:);       
         plot_count = plot_count+1;
         plotFFT(plot_count,chSeizure_data,lf,uf,Fs);
-%         title(['Seizure Onset Data FFT: ',num2str(timeMin),'-',num2str(timeMax),'s (into record)']);
         title(['Seizure Onset Data FFT: 2s into seizure onset at',num2str(seizureStart),'s']);
        
         % energy band
