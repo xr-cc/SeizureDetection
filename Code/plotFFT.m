@@ -25,12 +25,11 @@ fax = [0:N-1]*Fs/N; % frequency range in Hertz
 fax_picked = fax(lf/Fs*N+1:uf/Fs*N);
 X_picked = X(lf/Fs*N+1:uf/Fs*N);
 dB = mag2db(abs(X_picked));
-
+% plot fft 
 figure(plot_count)
-plot(fax_picked,dB); % plot fft 
+plot(fax_picked,dB); 
 xlabel('Frequency (Hz)');
 ylabel('Magnitude (dB)');
 title(['FFT of EEG data']);
 grid on
-
 end

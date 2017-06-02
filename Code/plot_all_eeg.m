@@ -1,6 +1,7 @@
-% plot all eeg
-n = 2;
-for i = 2:n
+% Plot EEG of all patients(cases) and all files of each. 
+% Note: may change n and i to control the patients(cases) plotted.
+n = 1;
+for i = 1:n
     patientID = num2str(i,'%02d');
     try
         % load data
