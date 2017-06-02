@@ -35,8 +35,6 @@ if nargin < 2
   Fs = 256; % default sample rate
 end
 
-note_file = fopen(['process_note',patientID,'.txt'],'w');
-
 %%
 features = [];
 labels = [];
@@ -60,10 +58,8 @@ for i = 1:nseg
     seizureFlags = [seizureFlags,summary.info{i,5}];
     seizureInfos = [seizureInfos,summary.info{i,6}];
 end
-% baseTime = time2sec(startTs{1}); % starting time
-% t = [];
-% data = [];
 
+% length of non-seizure data segment
 time_nonseizure = H*3600;
 num_nonseizure = nseg-sum(seizureFlags);
 time_per_nonseizure = int8(time_nonseizure/num_nonseizure)*Hmulti;
@@ -71,11 +67,9 @@ time_per_nonseizure = int8(time_nonseizure/num_nonseizure)*Hmulti;
 for segID = segIDs
     % index of specified segment
     idx = find(strcmp(segIDs,segID));
-    % load data from file
+    %% load data from file
     segID = char(segID);
-    display(segID);
-    fprintf(note_file, ['Processing seg ',segID,'...\n']); 
-    
+    display(segID);    
     fileName = ['SNchb',patientID,'_',segID,'.mat'];
     file = load([filePath,'/',fileName]);
     fName = fieldnames(file);
@@ -91,7 +85,6 @@ for segID = segIDs
         if endT<startT % one day more
             endT = endT+time2sec('24:00:00');
         end   
-%         firstT = W*L; 
         % random
         range = endT-startT-time_per_nonseizure-W*L;
         if range<0
@@ -99,7 +92,6 @@ for segID = segIDs
         end
         T_rand = randi(range);        
         firstT = W*L+T_rand;
-%         firstT = W*L;
         if Hmulti==0
             timeMax = endT;
         else
@@ -124,8 +116,7 @@ for segID = segIDs
             [segFeatureOutput,segLabelOutput]=get_seg_feature(eegData,firstT,timeMax,1,L,W,Fs);
             features = cat(4, features, segFeatureOutput);
             labels = [labels,segLabelOutput];
-            % also take non-seizure data
-            % before seizure start
+            % also take non-seizure data before onset
             before = max(seizureStart-time_per_nonseizure,W*L);
             endT = seizureStart;
             if Hmulti==0
@@ -136,7 +127,7 @@ for segID = segIDs
             [segFeatureOutput,segLabelOutput]=get_seg_feature(eegData,before,timeMax,0,L,W,Fs);
             features = cat(4, features, segFeatureOutput);
             labels = [labels,segLabelOutput];
-            % after seizure end
+            % take nonseizure data after seizure end
             after = seizureEnd+1;
             if Hmulti==0
                 timeMax = endT;
@@ -145,28 +136,22 @@ for segID = segIDs
             end            
             [segFeatureOutput,segLabelOutput]=get_seg_feature(eegData,after,timeMax,0,L,W,Fs);
             features = cat(4, features, segFeatureOutput);
-            labels = [labels,segLabelOutput];
-            
+            labels = [labels,segLabelOutput];            
          end
          
      end
-     fprintf(note_file, ['Done seg ',segID,'...\n']); 
 end
-% labelOutput: 1*T
-% featureOuput: M*chN*W*T
+% labels: 1*T
+% features: M*chN*W*T
 
 %% save feature and label
 savePath = ['../Feature/chb',patientID,'feature'];
 if ~exist(savePath, 'dir')
   mkdir(savePath);
 end
-% info = num2cell(info)
 featureFileName = ['SNchb',char(patientID),'features.mat'];
 save([savePath,'/',featureFileName],'features');
 labelFileName = ['SNchb',char(patientID),'labels.mat'];
 save([savePath,'/',labelFileName],'labels');
 
-
-fprintf(note_file, ['Save ',patientID,' done.\n']); 
-fclose(note_file);
 end

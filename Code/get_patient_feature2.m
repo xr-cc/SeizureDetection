@@ -1,5 +1,6 @@
+% Same as function get_patient_feature()
 patientID = '01'
-%   Hmulti = 2;    
+
 H = 1;    % default hours of non-seizure data % currently not used
 S = 20;   % default seconds into seizure
 W = 3;    % default number of intervals
@@ -30,21 +31,17 @@ for i = 1:nseg
     seizureFlags = [seizureFlags,summary.info{i,5}];
     seizureInfos = [seizureInfos,summary.info{i,6}];
 end
-% baseTime = time2sec(startTs{1}); % starting time
-% t = [];
-% data = [];
 
 time_nonseizure = H*3600;
 num_nonseizure = nseg-sum(seizureFlags);
 time_per_nonseizure = int8(time_nonseizure/num_nonseizure);
 
 cut = [];
-
 for segID = segIDs
 try
     % index of specified segment
     idx = find(strcmp(segIDs,segID));
-    % load data from file
+    %% load data from file
     segID = char(segID);
     display(segID);    
     fileName = ['SNchb',patientID,'_',segID,'.mat'];
@@ -69,7 +66,6 @@ try
         end
         T_rand = double(randi(range));
         firstT = W*L+T_rand;
-%         firstT = W*L;
         timeMax = min(firstT+double(time_per_nonseizure),endT);
         if timeMax<0
             timeMax = firstT+double(time_per_nonseizure);
@@ -78,8 +74,7 @@ try
         features = cat(4, features, segFeatureOutput);
         labels = [labels,segLabelOutput];
 
-     else % seizure   
-         
+     else % seizure            
          disp('Seizure');
          sInfo = seizureInfos{idx};
          seizureI = fieldnames(sInfo);
@@ -100,35 +95,22 @@ try
             firstT = seizureStart+L; % time idx for first X_T_tilt
             [segFeatureOutput,segLabelOutput]=get_seg_feature(eegData,firstT,timeMax,1,L,W,Fs);
             features = cat(4, features, segFeatureOutput);
-            labels = [labels,segLabelOutput];
-            
-%             % after seizure end
-%             after = seizureEnd+1;
-%             if Hmulti==0
-%                 timeMax = endT;
-%             else
-%                 timeMax = min(after+time_per_nonseizure,endT);
-%             end            
-%             [segFeatureOutput,segLabelOutput]=get_seg_feature(eegData,after,timeMax,0,L,W,Fs);
-%             features = cat(4, features, segFeatureOutput);
-%             labels = [labels,segLabelOutput];            
-         end
-         
+            labels = [labels,segLabelOutput];                      
+         end        
      end
-%      fprintf(note_file, ['Done seg ',segID,'...\n']); 
+
 catch ME
     disp([segID,'ERROR'])
 end
 end
-% labelOutput: 1*T
-% featureOuput: M*chN*W*T
+% labels: 1*T
+% features: M*chN*W*T
 
 %% save feature and label
 savePath = ['../Feature/chb',patientID,'feature'];
 if ~exist(savePath, 'dir')
   mkdir(savePath);
 end
-% info = num2cell(info)
 featureFileName = ['SNchb',char(patientID),'features2.mat'];
 save([savePath,'/',featureFileName],'features');
 labelFileName = ['SNchb',char(patientID),'labels2.mat'];
