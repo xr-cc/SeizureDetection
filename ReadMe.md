@@ -6,9 +6,9 @@ Goldberger AL, Amaral LAN, Glass L, Hausdorff JM, Ivanov PCh, Mark RG, Mietus JE
 
 
 
-## MATLAB CODE
+## MATLAB CODE ##
 Data Processing and Feauture Generation
-####Location: /Code
+#### Location: /Code ####
 
 edf2mat()
 * Transform edf. file to mat. file and save it under ../Data/
@@ -89,9 +89,9 @@ generate_feature_by_record()
 
 
 
-## PYTHON CODE
+## PYTHON CODE ##
 Classification and Performance Measurement
-####Location: /PythonCode
+#### Location: /PythonCode ####
 
 correlation
 * Calculate correlation (p-values) of features of specific case.
