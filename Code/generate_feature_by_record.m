@@ -1,10 +1,10 @@
 function [seizure_features,seizure_labels, nonseizure_features,nonseizure_labels] ...
     = generate_feature_by_record(patientID,L,W,S,Fs)
 % GENERATE_FEATURE_BY_RECORD  Generate features by record and save to file(seg).
+% Not in use. This is a function version of "get_patient_feature_separately".
 % Usage:    [seizure_features,seizure_labels,nonseizure_features,nonseizure_labels] = generate_feature_by_record(patientID,L,W,S,Fs)
 %           [seizure_features,seizure_labels,nonseizure_features,nonseizure_labels]
 %           = generate_feature_by_record(patientID)
-%           plotEEG(plot_count,data,channels)
 % Inputs:   patientID           -char array of patient ID
 %           L(opt)              -interval length (default:2)
 %           W(opt)              -number of intervals (default:3)
@@ -66,8 +66,6 @@ time_per_nonseizure = int8(time_nonseizure/num_nonseizure)
 seizure_indices = find(seizureFlags==1);
 nonseizure_indices = find(seizureFlags==0);
 
-
-
 for segID = segIDs
     % index of specified segment
     idx = find(strcmp(segIDs,segID));
@@ -108,8 +106,7 @@ for segID = segIDs
             seizurePeriod = sInfo.(seizureI{j});
             seizureStart = seizurePeriod{1};
             seizureEnd = seizurePeriod{2};
-            % also take non-seizure data
-            % before seizure start
+            % also take non-seizure data before onset
             before = max(seizureStart-S/pre_seizure_divider-1,W*L);
             endT = seizureStart;
 %             timeMax = min(before+time_per_nonseizure,endT);                      

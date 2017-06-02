@@ -1,4 +1,5 @@
 function [features,labels]=extract_feature(patientID,Fs,L,W,S,H)
+% No in use.
 % Note:     used function: time2sec(), get_energy()
 
 %% default value for optinal arguments
@@ -58,9 +59,6 @@ for i = 1:nsegUsed
     fName = fieldnames(file);
     channels = (file.(fName{1}){1})';
     eegData = file.(fName{1}){2};
-%     idx = find(strcmp(channels,targetChan));
-%     chanData = eegData(idx,:);
-%     data = [data, chanData];
     
     if labels(i)==0
     %% non-seizure        
@@ -71,7 +69,6 @@ for i = 1:nsegUsed
             endT = endT+time2sec('24:00:00');
         end
         timeMin = startT;
-%         timeMax = min(startT+H*3600,endT);
         timeMax = endT;
         T_tilt = W*L; % time idx for first X_T_tilt        
         while (T_tilt<=timeMax-L)
@@ -144,11 +141,10 @@ savePath = ['../Feature/chb',patientID,'feature'];
 if ~exist(savePath, 'dir')
   mkdir(savePath);
 end
-% info = num2cell(info)
+
 featureFileName = ['SNchb',char(patientID),'feature.mat'];
 save([savePath,'/',featureFileName],'featureOutput')
 labelFileName = ['SNchb',char(patientID),'label.mat'];
 save([savePath,'/',labelFileName],'labelOutput')
-
 
 end
