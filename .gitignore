@@ -48,8 +48,10 @@ Temporary Items
 Data/chb06/MD5SUMS
 Data/chb06/SHA1SUMS
 
-# Files in data, feature, measurements and libsvm package
+# Files in data, feature, measurements, libsvm package and others
 /Data/*
 /Feature/*
 /Measurements/*
 /Code/libsvm-3.22/*
+/setup_edfbrowser_158.exe
+/edf_to_mat.zip
