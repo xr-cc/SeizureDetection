@@ -16,33 +16,34 @@ if nargin < 3
 end
 
 %%
-% addpath('D:/Data/Scalp EEG data/physionet.org/pn6/chbmit/chb01/');
-addpath(['../Data/chb',patientID,'/']);
+numID = regexp(patientID, '(\d+)', 'tokens');
+numID = char(numID{1});
+addpath(['../Data/chb',numID,'/']);
 N = [patientID,'_',fileID];
 f = ['chb',N];
 filename = [f,'.edf'] % e.g. 'chb01_01.edf';
 [hdr,rec]= edfread(filename);
 D = rec;
+% remove all rows with NAN data
 cut = ~any(isnan(D),2);
 D(find(cut==0),:)=[];
  
 %%
 labels = hdr.label; % all channels provided by data
-labels((find(cut==0)))=[];
+labels((find(cut==0)))=[]; % removing corresponding labels of NAN data
 channels_used = ismember(labels,channels); % indices of channels used
 used_channels = labels(channels_used); % channels used
 [A I] = unique(used_channels); % used channels and corresponding indices
 % not_used_channels = labels(~channels_used);
 % not_used_idx = find(~channels_used);
 used_idx = I;
-% D(not_used_idx,:) = [];
 D = D(used_idx,:); % follow the order in A
 A = A';
 varname = matlab.lang.makeValidName(['SN',f]);
 eval([varname '= {A,D-D(1,2)};']); %e.g. SNchb01_01 = D-D(1,2);
 %%
 fileName = ['SN',f,'.mat'];
-savePath = ['../Data/chb',patientID,'mat'];
+savePath = ['../Data/chb',numID,'mat'];
 if ~exist(savePath, 'dir')
   mkdir(savePath);
 end

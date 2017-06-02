@@ -14,7 +14,6 @@ function [labels,info] = process_patient(patient,processFlag)
 %                            contain 1x2 cell of seizure onset and end time.                            
 % Note:     used function: edf2mat()
 
-%num2str([0:20].','%02d')
 if nargin < 2
   processFlag = false;
 end
@@ -24,12 +23,10 @@ disp(S);
 
 labels = ''; % default value if not processing file
 
-note_file = fopen(['process_note',patient,'.txt'],'w');
-
 path = ['../Data/chb',patient,'/'];
 addpath(path);
 summaryfile = ['chb',patient,'-summary.txt']; %chbxx-summary.txt
-% disp(summaryfile)
+
 
 %% store information
 info = [];
@@ -39,11 +36,11 @@ fid = fopen(summaryfile,'r');
 tline = fgets(fid);
 while ischar(tline)
     str = tline;
-    seg = []; % to store info of current segment of data (or, file)
+    seg = []; % store info of current segment of data (or, file)
     % File Name
     namePattern = 'File Name';
     if (strfind(str,namePattern))
-        elems = regexp(str, '(\d+)_(\d+)', 'tokens');        
+        elems = regexp(str, '(\d+[a-z]*)_(\d+)', 'tokens');        
         patientID = elems{1}(1);
         fileID = elems{1}(2);
         %% process file of each time segment if processFlag is on
@@ -72,7 +69,7 @@ while ischar(tline)
         % File End Time
         endTimePattern = 'File End Time';
         if (strfind(str,endTimePattern))
-            elems = regexp(str, ': (\d+\:\d+\:\d+)', 'tokens');
+            elems = regexp(str, ':\s*(\d+\:\d+\:\d+)', 'tokens');
             endTime = elems{1};
             seg = [seg, endTime]; 
         end
@@ -81,7 +78,7 @@ while ischar(tline)
         % Number of Seizures in File
         numSeizureInd = 'Number';
         if (strfind(str,numSeizureInd))
-            elems = regexp(str, ': (\d+)', 'tokens');
+            elems = regexp(str, ':\s*(\d+)', 'tokens');
             num = str2double(elems{1});
             seg = [seg, num]; 
             seizureInfo = struct;
@@ -91,11 +88,11 @@ while ischar(tline)
                     str = tline;
                     seizureInd = 'Seizure';
                     if (strfind(str,seizureInd))
-                        elems = regexp(str, ': (\d+) seconds', 'tokens');                        
+                        elems = regexp(str, ':\s*(\d+) seconds', 'tokens');                        
                         seizureStartTime = str2double(elems{1});
                         tline = fgets(fid);
                         str = tline;
-                        elems = regexp(str, ': (\d+) seconds', 'tokens');                        
+                        elems = regexp(str, ':\s*(\d+) seconds', 'tokens');                      
                         seizureEndTime = str2double(elems{1});
                         value = {seizureStartTime,seizureEndTime};
                         seizureInfo.(['Seizure',num2str(i)]) = value;                    
@@ -113,20 +110,14 @@ while ischar(tline)
 end
 fclose(fid);
 
-fprintf(note_file, ['Read ',patient,' done.\n']); 
-
 %% save info to file
 savePath = ['../Data/chb',patient,'mat'];
 if ~exist(savePath, 'dir')
   mkdir(savePath);
 end
-% info = num2cell(info)
 fileName = ['SNchb',char(patient),'summary.mat'];
 save([savePath,'/',fileName],'info')
 
 S=sprintf('Finish Processing Patient %s',patient);
 disp(S);
-
-fprintf(note_file, ['Save ',patient,' done.\n']); 
-fclose(note_file);
 end
