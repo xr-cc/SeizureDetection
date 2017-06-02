@@ -1,7 +1,6 @@
+% read in summary of a specific patient(case)
 %%
 clear; clc
-%num2str([0:20].','%02d')
-
 patient = '01';
 S=sprintf('Reading Summary of Patient %s ...',patient);
 disp(S);
@@ -55,8 +54,5 @@ while ischar(tline)
     tline = fgets(fid);
 end
 fclose(fid);
-% N = '01_01';
-% f = ['chb',N];
-% filename = [f,'.edf']
 
 %% read from summary
