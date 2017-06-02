@@ -21,7 +21,7 @@ featureOutput = [];
 labelOutput = [];
 featureIdx = 1;
 
-while (T_tilt<=timeMax-L)
+while (T_tilt<=timeMax)%-L
     epoch_count = 1;
     W_epoch_energy = [];
     for k = 1:W % loop through each of W epochs (L-second long)
@@ -33,12 +33,10 @@ while (T_tilt<=timeMax-L)
         W_epoch_energy(:,:,epoch_count) = epoch_energy;
         epoch_count = epoch_count+1;
     end
-
     % append to feature and label output
     featureOutput(:,:,:,featureIdx) = W_epoch_energy;
     labelOutput(featureIdx) = seizureFlag;
     featureIdx = featureIdx+1;
-
     % increment
     T_tilt  = T_tilt+1;   
 end
