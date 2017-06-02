@@ -1,5 +1,5 @@
 function [featureOutput,labelOutput]=get_seg_feature(eegData,T_tilt,timeMax,seizureFlag,L,W,Fs)
-% GET_SEG_FEATURE  Generate features and plot data for single segment.
+% GET_SEG_FEATURE  Generate features for a segment of data.
 % Usage:    [featureOutput,labelOutput]=get_seg_feature(eegData,T_tilt,timeMax,seizureFlag,L,W,Fs)
 %           [featureOutput,labelOutput]=get_seg_feature(eegData,T_tilt,timeMax,seizureFlag,L,W)
 % Inputs:   eegData         -EEG data of the segment
