@@ -1,3 +1,6 @@
+'''
+Leave one seizure record out and measure performances based on data points.
+'''
 import scipy.io
 import numpy as np
 from sklearn import svm

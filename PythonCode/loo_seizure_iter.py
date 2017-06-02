@@ -1,12 +1,14 @@
+'''
+Leave one seizure record out and measure performances based on data points.
+Iterate for (iter) times and average the results.
+'''
 import scipy.io
 import numpy as np
 from sklearn import svm
 from sklearn.metrics import accuracy_score
 import random
-import os
 
-case = '03'
-note = "seizure taken from data"
+case = '01'
 pre_seizure = 10
 iter = 100
 
@@ -26,7 +28,6 @@ if len(end_indices)<len(onset_indices):
 
 feature_length = len(features)*len(features[0])*len(features[0][0])
 T = len(labels[0]) # 8*18*3*T
-
 feature_inputs = []
 label_inputs = labels[0]
 N = range(T)
@@ -104,11 +105,3 @@ for j in range(iter):
     accrs.append(avg_accr)
     avg_la = avg_la/len(onset_indices)
     las.append(avg_la)
-
-
-meas_note_path = '../Measurements/'
-with open(meas_note_path+"note"+case+".txt", "a") as myfile:
-    myfile.write("number of data used: "+str(num_picked)+"\n")
-    myfile.write("number of seizures: "+str(len(onset_indices))+"\n")
-    myfile.write('average accuracy: ' + str(np.mean(accrs)) + "\n")
-    myfile.write('average latency: ' + str(np.mean(las))+"\n\n")
