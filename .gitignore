@@ -48,7 +48,8 @@ Temporary Items
 Data/chb06/MD5SUMS
 Data/chb06/SHA1SUMS
 
-# Files in data, feature and measurements
+# Files in data, feature, measurements and libsvm package
 /Data/*
 /Feature/*
 /Measurements/*
+/Code/libsvm-3.22/*
