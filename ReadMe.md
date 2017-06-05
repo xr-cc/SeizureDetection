@@ -1,5 +1,5 @@
 ## SUMMARY
-Code and brief explanations of data-processing and classification processes of Seizure Onset Detection Problem.<br ><br >
+Code and brief explanations for reproducing of data-processing and classification procedures of Seizure Onset Detection Problem.<br ><br >
 Database used: CHB-MIT Scalp EEG Database<br ><br >
 Procedures based on those described in thesis:<br >
 Goldberger AL, Amaral LAN, Glass L, Hausdorff JM, Ivanov PCh, Mark RG, Mietus JE, Moody GB, Peng C-K, Stanley HE. PhysioBank, PhysioToolkit, and PhysioNet: Components of a New Research Resource for Complex Physiologic Signals. Circulation 101(23):e215-e220 [Circulation Electronic Pages; http://circ.ahajournals.org/cgi/content/full/101/23/e215]; 2000 (June 13).
