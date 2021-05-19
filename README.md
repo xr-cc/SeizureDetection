@@ -1,14 +1,15 @@
-## SUMMARY
-Code and brief explanations for reproducing of data-processing and classification procedures of Seizure Onset Detection Problem.<br ><br >
-Database used: CHB-MIT Scalp EEG Database<br ><br >
-Procedures based on those described in thesis:<br >
-Goldberger AL, Amaral LAN, Glass L, Hausdorff JM, Ivanov PCh, Mark RG, Mietus JE, Moody GB, Peng C-K, Stanley HE. PhysioBank, PhysioToolkit, and PhysioNet: Components of a New Research Resource for Complex Physiologic Signals. Circulation 101(23):e215-e220 [Circulation Electronic Pages; http://circ.ahajournals.org/cgi/content/full/101/23/e215]; 2000 (June 13).
+# Seizure Detection Using EEG Data
+This repository contains code and brief explanations for reproducing of data-processing and classification procedures of Seizure Onset Detection Problem.
+<br >
+Database used: [CHB-MIT Scalp EEG Database](https://physionet.org/content/chbmit/1.0.0/) <br >
+Steps based on:<br >
+> Goldberger AL, Amaral LAN, Glass L, Hausdorff JM, Ivanov PCh, Mark RG, Mietus JE, Moody GB, Peng C-K, Stanley HE. PhysioBank, PhysioToolkit, and PhysioNet: Components of a New Research Resource for Complex Physiologic Signals. Circulation 101(23):e215-e220 [Circulation Electronic Pages; http://circ.ahajournals.org/cgi/content/full/101/23/e215]; 2000 (June 13).
 
 
 
-## MATLAB CODE ##
-Data Processing and Feauture Generation
-#### Location: /Code ####
+## MATLAB CODE 
+### Data Processing and Feauture Generation
+*Location: ``/Code``*
 
 edf2mat()
 * Transform edf. file to mat. file and save it under ../Data/
@@ -55,13 +56,11 @@ get_patient_feature_minusL
 * (need modification of data range in get_seg_feature())
 
 
-
 edfread() [Copyright 2009 - 2012 MathWorks, Inc.]
 * Read European Data Format file into MATLAB
 
 edfreadUntilDone() [Copyright 2009 - 2012 MathWorks, Inc.]
 * Read European Data Format file into MATLAB
-
 
 
 plotFFT()
@@ -88,10 +87,9 @@ generate_feature_by_record()
 * not used (old version)
 
 
-
 ## PYTHON CODE ##
-Classification and Performance Measurement
-#### Location: /PythonCode ####
+### Classification and Performance Measurement
+*Location: ``/PythonCode``*
 
 correlation
 * Calculate correlation (p-values) of features of specific case.
@@ -109,8 +107,6 @@ loo_nonseizure_fa
 loo_nonseizure_fa_iter
 * Leave one non-seizure record out and calculate false alarm rates (measure specificity).
 * Iterate for (iter) times and average the results.
-
-
 
 svm_split
 * Split data into training and testing set.
@@ -137,8 +133,6 @@ new_sensitivity
 new_specificity
 * Leave one non-seizure record out and calculate false alarm rates (measure specificity).
 * (used for features generated from get_patient_feature_simultaneously)
-
-
 
 leave_one_seizure_data_out
 * Leave one seizure data point out and measure performances.
